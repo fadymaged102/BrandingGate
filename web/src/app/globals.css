@@ -1,0 +1,386 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Branding Gate design tokens
+   Navy + gold arch from the logo, deepened for a cinematic dark stage.
+   Gold is reserved for interactive affordances; project accents only
+   tint atmosphere.
+------------------------------------------------------------------- */
+
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #c8902a;
+}
+
+@property --base {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #050a24;
+}
+
+:root {
+  --ink-950: #050a24;
+  --navy-900: #0b154c;
+  --navy-800: #0c1b5e;
+  --line: rgb(248 248 255 / 0.1);
+  --line-strong: rgb(248 248 255 / 0.18);
+  --fg: #f8f8ff;
+  --fg-muted: #a6abcb;
+  --fg-faint: #8b91b5;
+  --gold: #c8902a;
+  --gold-hi: #e6b24e;
+
+  --accent: var(--gold);
+  --base: var(--ink-950);
+
+  /* Home's sticky-note board only: paper colours, always with ink text. */
+  --note-yellow: #fbe7a1;
+  --note-mint: #bfe9d3;
+  --note-coral: #f8bcae;
+  --note-sky: #bcdcf5;
+  --note-lavender: #d8cff5;
+  --note-peach: #fbd2ad;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-ui: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --maxw: 92rem;
+  --header-h: 4.5rem;
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-ink: var(--ink-950);
+  --color-navy-900: var(--navy-900);
+  --color-navy-800: var(--navy-800);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-faint: var(--fg-faint);
+  --color-gold: var(--gold);
+  --color-gold-hi: var(--gold-hi);
+  --color-accent: var(--accent);
+
+  --font-display: var(--font-alexandria), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-work-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --ease-out-expo: var(--ease-out);
+  --ease-ui: var(--ease-ui);
+  --ease-inout: var(--ease-inout);
+}
+
+@layer base {
+  /* The base lives on the root so the fixed atmosphere layer can sit
+     between it and the content (z-index -1). */
+  html {
+    background: var(--base);
+    transition: --base 800ms var(--ease-ui);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  body {
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-feature-settings: "ss01", "kern";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--gold);
+    color: var(--ink-950);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--gold-hi);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Reveal text starts hidden only when script will run to show it, with a
+     failsafe that shows it anyway if the bundle is slow or fails. */
+  @media (scripting: enabled) {
+    [data-reveal] {
+      visibility: hidden;
+      animation: reveal-failsafe 0s linear 2.5s forwards;
+    }
+  }
+
+  @keyframes reveal-failsafe {
+    to {
+      visibility: visible;
+    }
+  }
+
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  @media (hover: none) {
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+  }
+}
+
+@layer components {
+  .shell {
+    width: 100%;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .t-d1 {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 7.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .t-d2 {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 4.5vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  .t-h3 {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  .t-body-l {
+    font-size: clamp(1.125rem, 1.4vw, 1.25rem);
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  .t-meta {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+  }
+
+  /* Atmosphere: a fixed light layer tinted by the active accent. The accent
+     is set and transitioned on this element only, so a repaint never
+     restyles the rest of the page. */
+  .atmosphere-layer {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      120% 70% at 50% -10%,
+      color-mix(in oklab, var(--accent) 14%, transparent),
+      transparent 60%
+    );
+    transition: --accent 800ms var(--ease-ui);
+  }
+
+  /* The work filter rides just below the header while it is showing. */
+  .filter-sticky {
+    top: calc(var(--header-h) + 0.75rem);
+    transition: top 500ms var(--ease-ui);
+  }
+
+  html[data-header-hidden="true"] .filter-sticky {
+    top: 0.75rem;
+  }
+
+  /* Grid unit: each row is exactly one column wide, so tiles are
+     described in whole cells (span c x r) and keep their proportions. */
+  .work-grid {
+    --gap: clamp(0.75rem, 1.2vw, 1.25rem);
+    container-type: inline-size;
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .work-tile {
+    aspect-ratio: var(--ar);
+  }
+
+  @media (min-width: 768px) {
+    .work-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-auto-rows: calc((100cqi - 11 * var(--gap)) / 12);
+      grid-auto-flow: row dense;
+    }
+
+    .work-tile {
+      aspect-ratio: auto;
+      grid-column: span var(--c);
+      grid-row: span var(--r);
+    }
+
+    .work-grid[data-filtered="true"] .work-tile {
+      grid-column: span 6;
+      grid-row: span 4;
+    }
+  }
+
+  /* Sticky notes. The rest tilt lives on the note; the lift, straighten
+     and deeper shadow on hover/focus are pure transform and shadow. */
+  .note {
+    --tilt: 0deg;
+    transform: rotate(var(--tilt));
+    box-shadow:
+      0 1px 1px rgb(0 0 0 / 0.18),
+      0 12px 24px -10px rgb(0 0 0 / 0.55);
+    transition:
+      transform 450ms var(--ease-out),
+      box-shadow 450ms var(--ease-out);
+  }
+
+  .note:focus-visible {
+    outline-offset: 6px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .note:hover {
+      transform: translateY(-10px) rotate(0deg) scale(1.04);
+      box-shadow:
+        0 2px 2px rgb(0 0 0 / 0.15),
+        0 34px 50px -18px rgb(0 0 0 / 0.7);
+    }
+  }
+
+  .note:focus-visible {
+    transform: translateY(-10px) rotate(0deg) scale(1.04);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .note {
+      transition-duration: 1ms;
+    }
+  }
+
+  /* Paper: a faint top light and a slightly darker foot. */
+  .note-paper {
+    background-image: linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 0.28),
+      rgb(255 255 255 / 0) 30%,
+      rgb(0 0 0 / 0.06)
+    );
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .hairline {
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Route transitions (React <ViewTransition>, see PageTransition.tsx).
+   Exit is quick so it never competes; the new page rises a short way and
+   arrives on the same reveal curve as the line-masked headlines.
+------------------------------------------------------------------- */
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(.page-exit) {
+  animation: page-out 180ms var(--ease-ui) both;
+}
+
+::view-transition-new(.page-enter) {
+  animation: page-in 560ms var(--ease-out) 120ms both;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* A plain crossfade: no positional movement. */
+  ::view-transition-old(.page-exit) {
+    animation: page-fade 160ms linear reverse both;
+  }
+
+  ::view-transition-new(.page-enter) {
+    animation: page-fade 200ms linear both;
+  }
+
+  @keyframes page-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+
+  html,
+  .atmosphere-layer {
+    transition-duration: 200ms;
+  }
+}

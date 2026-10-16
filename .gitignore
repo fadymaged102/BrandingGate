@@ -1,0 +1,8 @@
+# Source footage and scrapes (not shipped; see CLAUDE.md)
+.scrape/
+
+# Browser test artifacts
+.playwright/
+.playwright-cli/
+
+.DS_Store
