@@ -9,6 +9,13 @@ export const DISCIPLINES: { id: Discipline | "all"; label: string }[] = [
   { id: "giveaways", label: "Giveaways" },
 ];
 
+export const isDiscipline = (id: string): id is Discipline =>
+  DISCIPLINES.some((d) => d.id === id && id !== "all");
+
+/** The portfolio, pre-filtered to a discipline when there is work in it. */
+export const portfolioHref = (id?: string) =>
+  id && isDiscipline(id) ? `/portfolio?filter=${id}#work` : "/portfolio#work";
+
 export type Frame = "screen" | "phone" | "plain";
 
 export type Still = {
@@ -73,6 +80,8 @@ export type CaseProject = Base & {
 export type PieceProject = Base & {
   kind: "piece";
   discipline: string;
+  /** A set of social posts, shown as a swipeable row when the piece opens. */
+  posts?: Still[];
 };
 
 export type Project = CaseProject | PieceProject;
@@ -456,6 +465,114 @@ const manara: PieceProject = {
   accent: "#b59a72",
 };
 
+// Client briefs supplied in the November 2026 edits (slide 12); images from
+// the client's Drive folder (slide 11).
+const tarzi: PieceProject = {
+  kind: "piece",
+  slug: "tarzi-social-media",
+  title: "TARZI social media",
+  client: "TARZI",
+  discipline: "Digital marketing",
+  disciplines: ["digital"],
+  kicker: "Social media management for a tailoring brand",
+  summary:
+    "TARZI is a tailoring brand offering customized clothing and professional alteration services. Branding Gate worked with TARZI to promote its services, announce its store opening, and build its social media presence. The project focused on increasing brand awareness, highlighting its tailoring expertise, and connecting the brand with potential customers through engaging social media content.",
+  cover: still(
+    "/work/tarzi/post-05.jpg",
+    "TARZI opening-day post: a purple gown on a mannequin in the shop, crossed by orange We Are Open tape, with the Hala Mall address",
+    "portrait",
+  ),
+  posts: [
+    still(
+      "/work/tarzi/post-01.jpg",
+      "TARZI post headlined Tailored to Your Style, showing a mannequin draped in purple satin with a yellow tape measure",
+      "portrait",
+    ),
+    still(
+      "/work/tarzi/post-02.jpg",
+      "TARZI post headlined Step Up Your Style, with purple satin on a mannequin against a purple arch",
+      "portrait",
+    ),
+    still(
+      "/work/tarzi/post-03.jpg",
+      "TARZI post headlined Perfect Tailoring for every piece of your suit, showing a basted suit jacket on a stand: suits, jackets, trousers, we fix them all",
+      "portrait",
+    ),
+    still(
+      "/work/tarzi/post-04.jpg",
+      "TARZI post reading Pick the design you love and leave the tailoring to us, with blue silk draped on a dress form",
+      "portrait",
+    ),
+    still(
+      "/work/tarzi/post-05.jpg",
+      "TARZI opening-day post: a purple gown on a mannequin in the shop, crossed by orange We Are Open tape, with the Hala Mall address",
+      "portrait",
+    ),
+  ],
+  frame: "plain",
+  span: { c: 4, r: 5 },
+  mobileRatio: "3 / 4",
+  accent: "#5b2d8e",
+};
+
+const bridgePoint: PieceProject = {
+  kind: "piece",
+  slug: "bridge-point-properties-social-media",
+  title: "Bridge Point Properties",
+  client: "Bridge Point Properties",
+  discipline: "Digital marketing",
+  disciplines: ["digital"],
+  kicker: "Social media for UAE real estate",
+  summary:
+    "For Bridge Point Properties, Branding Gate created social media content showcasing luxury properties, iconic destinations, and investment opportunities across the UAE. The project focused on presenting real estate developments in an engaging way while building a stronger connection with potential buyers.",
+  cover: still(
+    "/work/bridge-point/post-01.jpg",
+    "Bridge Point Properties post for Bashayer: villas along a rocky shoreline under the line Your Villa Era Starts on the Water",
+    "portrait",
+  ),
+  posts: [
+    still(
+      "/work/bridge-point/post-01.jpg",
+      "Bridge Point Properties post for Bashayer: villas along a rocky shoreline under the line Your Villa Era Starts on the Water",
+      "portrait",
+    ),
+    still(
+      "/work/bridge-point/post-02.jpg",
+      "Post for Hudayriyat Surf on Al Hudayriyat Island, with a young surfer riding a wave",
+      "portrait",
+    ),
+    still(
+      "/work/bridge-point/post-03.jpg",
+      "Welcome to Al Reem Island post, showing the island's towers above the water and mangroves",
+      "portrait",
+    ),
+    still(
+      "/work/bridge-point/post-04.jpg",
+      "Fahid Island post announcing a 5% down payment and waived ADM fee, with a cartoon mouse surfing in front of beachfront towers",
+      "portrait",
+    ),
+    still(
+      "/work/bridge-point/post-05.jpg",
+      "Post reading Where Bold Design Becomes a Way of Living, over twin waterfront towers at dusk",
+      "portrait",
+    ),
+    still(
+      "/work/bridge-point/post-06.jpg",
+      "A Waterfront Destination post, showing an aerial night view of a marina development",
+      "portrait",
+    ),
+    still(
+      "/work/bridge-point/post-07.jpg",
+      "Brabus Al Raha Beach, Abu Dhabi post listing apartments, duplex penthouses and a 10% down payment over an aerial view of the beach",
+      "portrait",
+    ),
+  ],
+  frame: "plain",
+  span: { c: 4, r: 5 },
+  mobileRatio: "3 / 4",
+  accent: "#2a6db0",
+};
+
 /** Grid order. Dense auto-placement fills the 12-column unit grid in this sequence. */
 export const projects: Project[] = [
   rahn,
@@ -466,6 +583,9 @@ export const projects: Project[] = [
   axa,
   nightEvent,
   manara,
+  // Digital social sets close the grid in a row of portrait tiles.
+  tarzi,
+  bridgePoint,
 ];
 
 export const caseProjects = projects.filter(

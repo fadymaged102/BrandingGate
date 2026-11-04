@@ -5,11 +5,11 @@ import { AboutHero } from "@/components/about/AboutHero";
 import { Values } from "@/components/about/Values";
 import { Figures } from "@/components/Figures";
 import { PillLink } from "@/components/ui/Buttons";
-import { about, services } from "@/lib/site";
+import { about, services, servicesCopy } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
-  description: about.body,
+  description: about.sections[1].body,
   alternates: { canonical: "/about" },
   openGraph: { images: [about.team.src] },
 };
@@ -26,11 +26,12 @@ export default function AboutPage() {
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
             <p className="t-meta text-muted">What we do</p>
-            <h2 id={servicesId} className="t-d2 mt-5 max-w-[12ch]">
-              One studio, six disciplines
+            <h2 id={servicesId} className="t-d2 mt-5 max-w-[14ch]">
+              {servicesCopy.heading}
             </h2>
+            <p className="mt-6 max-w-[44ch] text-pretty text-muted">{servicesCopy.body}</p>
             <div className="mt-10">
-              <PillLink href="/portfolio">See the work</PillLink>
+              <PillLink href="/portfolio">See the projects</PillLink>
             </div>
           </div>
           <ol className="grid border-t border-line sm:grid-cols-2 md:col-span-7">

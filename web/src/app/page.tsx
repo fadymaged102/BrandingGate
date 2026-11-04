@@ -9,8 +9,8 @@ import { Figures } from "@/components/Figures";
 import { home } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: { absolute: "Branding Gate | We Unleash Creativity" },
-  description: home.intro,
+  title: { absolute: `Branding Gate | ${home.headline}` },
+  description: home.intro[0],
   alternates: { canonical: "/" },
 };
 

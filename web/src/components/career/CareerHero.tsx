@@ -4,17 +4,14 @@ import Image from "next/image";
 import { useId, useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { about } from "@/lib/site";
-import { HEAD_OFFICE, roles } from "@/lib/careers";
+import { HEAD_OFFICE } from "@/lib/careers";
 import { RevealText } from "@/components/ui/RevealText";
 import { Eyebrow, PillLink } from "@/components/ui/Buttons";
 
-const COUNT_WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
-
-/** Join us: the team photo leans in with scroll depth while the copy holds still. */
+/** Career intro (client copy, slide 15): the team photo leans in with scroll depth while the copy holds still. */
 export function CareerHero() {
   const titleId = useId();
   const root = useRef<HTMLElement>(null);
-  const count = COUNT_WORDS[roles.length] ?? String(roles.length);
 
   useGSAP(
     () => {
@@ -43,12 +40,12 @@ export function CareerHero() {
       <div className="shell grid min-h-[min(100dvh,64rem)] items-center gap-12 pb-20 pt-[calc(var(--header-h)+3rem)] md:grid-cols-12 md:pb-24">
         <div className="md:col-span-6">
           <Eyebrow>Career. {HEAD_OFFICE}.</Eyebrow>
-          <RevealText as="h1" id={titleId} trigger="mount" delay={0.1} className="t-d1 mt-8 max-w-[8ch]">
-            Join us now.
+          <RevealText as="h1" id={titleId} trigger="mount" delay={0.1} className="t-d1 mt-8 max-w-[10ch]">
+            Your Next Move Starts Here.
           </RevealText>
           <div data-career-meta>
             <p className="t-body-l mt-6 max-w-[44ch] text-pretty text-muted">
-              {count} open {roles.length === 1 ? "role" : "roles"}: {roles.map((r) => r.title).join(", ")}.
+              Find the role that fits your talent, bring your ideas, and let&rsquo;s create something great together.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <PillLink href="#roles" direction="down">
@@ -71,7 +68,8 @@ export function CareerHero() {
               fill
               priority
               sizes="(min-width: 768px) 46vw, 100vw"
-              className="object-cover object-[50%_30%]"
+              className="object-cover"
+              style={{ objectPosition: about.team.focus }}
             />
           </div>
         </div>

@@ -8,7 +8,7 @@ import { studio } from "@/lib/projects";
 import { RevealText } from "@/components/ui/RevealText";
 import { Eyebrow } from "@/components/ui/Buttons";
 
-/** Who we are, then the team: the photo opens from an inset card to full bleed as you scroll. */
+/** Who we are (five short answers), then the team: the photo opens from an inset card as you scroll. */
 export function AboutHero() {
   const titleId = useId();
   const root = useRef<HTMLElement>(null);
@@ -55,17 +55,32 @@ export function AboutHero() {
         <Eyebrow>
           About. {studio.city}, since {studio.founded}.
         </Eyebrow>
-        <div className="mt-8 grid gap-10 md:grid-cols-12 md:items-end">
-          <RevealText as="h1" id={titleId} trigger="mount" delay={0.1} className="t-d1 max-w-[12ch] md:col-span-7">
-            {about.title}
-          </RevealText>
-          <p data-about-meta className="t-body-l max-w-[46ch] text-pretty text-muted md:col-span-5">
-            <span className="block">{about.body}</span>
-          </p>
+        <div className="mt-8 grid gap-12 md:gap-16 lg:grid-cols-12 lg:gap-x-10">
+          <div className="lg:col-span-6">
+            <RevealText
+              as="h1"
+              id={titleId}
+              trigger="mount"
+              delay={0.1}
+              className="t-d1 max-w-[12ch] lg:sticky lg:top-[calc(var(--header-h)+2rem)]"
+            >
+              {about.title}
+            </RevealText>
+          </div>
+          <dl data-about-meta className="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:col-span-6">
+            {about.sections.map((s, i) => (
+              <div
+                key={s.title}
+                className={`border-t border-line pt-5 ${i === about.sections.length - 1 && about.sections.length % 2 ? "sm:col-span-2" : ""}`}
+              >
+                <dt className="t-h3 text-balance">{s.title}</dt>
+                <dd className="mt-3 max-w-[56ch] text-pretty text-muted">{s.body}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </div>
 
-      {/* Inside the margins: the only team photo supplied is 960px wide. */}
       <div className="shell">
         <div
           data-about-plate
@@ -77,7 +92,8 @@ export function AboutHero() {
             fill
             priority
             sizes="(min-width: 1280px) 72rem, 100vw"
-            className="object-cover object-[50%_32%]"
+            className="object-cover"
+            style={{ objectPosition: about.team.focus }}
           />
         </div>
       </div>

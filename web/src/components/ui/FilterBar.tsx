@@ -15,8 +15,9 @@ type Props<T extends string> = {
 };
 
 /**
- * The portfolio's filter pill bar: glass track, gold-ringed indicator that
- * slides to the active option (transform-only), counts in mono.
+ * The filter pill bar: glass track, gold-ringed indicator that slides to
+ * the active option (transform-only), counts in mono. On narrow screens the
+ * options wrap onto a second row, so every one stays visible.
  */
 export function FilterBar<T extends string>({ options, value, onChange, counts, label }: Props<T>) {
   const bar = useRef<HTMLDivElement>(null);
@@ -30,13 +31,9 @@ export function FilterBar<T extends string>({ options, value, onChange, counts, 
     const place = (animate: boolean) => {
       const active = el.querySelector<HTMLElement>('[aria-pressed="true"]');
       if (!active) return;
-      const vars = { x: active.offsetLeft, scaleX: active.offsetWidth / 100 };
+      const vars = { x: active.offsetLeft, y: active.offsetTop, scaleX: active.offsetWidth / 100 };
       if (animate && !reduced) gsap.to(ind, { ...vars, duration: 0.5, ease: "ui" });
       else gsap.set(ind, vars);
-      if (el.scrollWidth > el.clientWidth) {
-        const left = active.offsetLeft - (el.clientWidth - active.offsetWidth) / 2;
-        el.scrollTo({ left, behavior: animate && !reduced ? "smooth" : "auto" });
-      }
     };
     place(true);
     const ro = new ResizeObserver(() => place(false));
@@ -50,12 +47,12 @@ export function FilterBar<T extends string>({ options, value, onChange, counts, 
         ref={bar}
         role="group"
         aria-label={label}
-        className="relative flex max-w-full gap-1 overflow-x-auto rounded-full bg-[rgb(11_21_76/0.55)] p-1 ring-1 ring-line backdrop-blur-xl [scrollbar-width:none] max-sm:[mask-image:linear-gradient(to_right,#000_85%,transparent)]"
+        className="relative flex max-w-full flex-wrap gap-1 rounded-[26px] bg-[rgb(11_21_76/0.55)] p-1 ring-1 ring-line backdrop-blur-xl"
       >
         <span
           ref={indicator}
           aria-hidden
-          className="absolute bottom-1 left-0 top-1 w-[100px] origin-left rounded-full bg-fg/[0.08] ring-1 ring-gold/70"
+          className="absolute left-0 top-0 h-11 w-[100px] origin-left rounded-full bg-fg/[0.08] ring-1 ring-gold/70"
         />
         {options.map((o) => {
           const count = counts.get(o.id) ?? 0;

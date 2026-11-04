@@ -134,7 +134,8 @@ export function WorkTile({ project, hidden, priority, depth, onOpen, onHover }: 
         </span>
         <span
           className={`t-meta hidden shrink-0 text-faint ${
-            project.span.c <= 4 ? "lg:inline sm:in-data-[filtered=true]:inline" : "sm:inline"
+            // Narrow tiles give the line to the title; the label returns when filtering widens them.
+            project.span.c <= 4 ? "sm:in-data-[filtered=true]:inline" : "sm:inline"
           }`}
         >
           {project.kind === "case" ? "Case study" : project.discipline}

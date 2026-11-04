@@ -16,10 +16,19 @@ export const services: Service[] = [
 
 export const home = {
   eyebrow: "At Branding Gate",
-  headline: "We Unleash Creativity",
-  servicesIntro: "Events, media, digital, 3D, giveaways and web: six disciplines, one studio.",
-  intro:
-    "We infuse vitality into every project, delivering customized creative solutions that make each endeavor truly extraordinary.",
+  /** The slogan (client edits, slide 3). */
+  headline: "Your Gate For Branding",
+  /** Client copy, supplied in the November 2026 edits (slide 3). */
+  intro: [
+    "At Branding Gate, we bring brands to life through creative strategies, innovative digital solutions, impactful events, and exceptional brand experiences.",
+    "From concept to execution, we combine creativity, technology, and production expertise to help businesses stand out, connect with their audiences, and make a lasting impact.",
+  ],
+} as const;
+
+/** The services heading and line, used on Home and About (client copy, slide 10). */
+export const servicesCopy = {
+  heading: "All Things Creative. All in One Place.",
+  body: "From strategy and digital to production and unforgettable experiences, we bring everything your brand needs together under one roof.",
 } as const;
 
 /** The six values, in the order the About page lists them. */
@@ -36,10 +45,34 @@ export const values: { id: ValueId; title: string }[] = [
 
 export const about = {
   title: "Welcome to Branding Gate.",
-  body: "Our company is driven by a passion for storytelling and a commitment to delivering exceptional results. We take pride in our team of creative minds who are dedicated to pushing boundaries and exceeding expectations. At Branding Gate, we believe in the power of unique narratives to elevate brands and create lasting impressions.",
+  /** Client copy, supplied in the November 2026 edits (slide 7). */
+  sections: [
+    {
+      title: "Who We Serve",
+      body: "We work with businesses, brands, and organizations across different industries, helping them achieve their marketing and business objectives.",
+    },
+    {
+      title: "What We Deliver",
+      body: "We provide 360° marketing and creative solutions, including event management, digital marketing, media production, 3D design, branded giveaways, and web development.",
+    },
+    {
+      title: "Where We Operate",
+      body: "We deliver projects across all governorates of Egypt, supporting brands wherever their projects and events take place.",
+    },
+    {
+      title: "How Our Capabilities Work Together",
+      body: "By bringing strategy, creativity, marketing, and production together, we provide clients with an integrated solution through one agency, ensuring consistency from the initial idea to the final execution.",
+    },
+    {
+      title: "How We Work",
+      body: "Every project starts with understanding the client's brief, objectives, and requirements. We then develop the concept, plan the strategy, coordinate the creative and production process, and execute the project to deliver a solution tailored to the client's needs.",
+    },
+  ],
   team: {
-    src: "/work/studio/team.jpg",
-    alt: "The Branding Gate team standing together on a seaside promenade at sunset",
+    src: "/work/studio/team-2026.jpg",
+    /** The team sits in the lower two-thirds of a 4:3 frame. */
+    focus: "50% 62%",
+    alt: "The Branding Gate team in matching white T-shirts, standing and seated on the edge of an outdoor stage under a lighting truss at night",
   },
 } as const;
 

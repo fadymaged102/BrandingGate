@@ -37,7 +37,12 @@ export function StudioTeaser() {
           <RevealText as="h2" id={titleId} className="t-d2 max-w-[12ch]">
             {about.title}
           </RevealText>
-          <p className="mt-6 max-w-[52ch] text-pretty text-muted">{about.body}</p>
+          {/* Who we serve and what we deliver, from the About page. */}
+          <div className="mt-6 max-w-[52ch] space-y-4 text-pretty text-muted">
+            {about.sections.slice(0, 2).map((s) => (
+              <p key={s.title}>{s.body}</p>
+            ))}
+          </div>
           <div className="mt-10 flex flex-wrap gap-3">
             <PillLink href="/about">Our story and values</PillLink>
             <PillLink href="/career" variant="ghost">

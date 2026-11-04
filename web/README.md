@@ -35,7 +35,7 @@ Routes: `/`, `/about`, `/portfolio`, `/portfolio/[slug]`, `/career`, `/blog`, `/
 | `src/components/blog/` | Blog index with spotlight, article layout, reading-progress arch |
 | `src/components/three/` | Shared gate geometry and WebGL support checks |
 | `src/components/PageTransition.tsx` | Route transitions (React `<ViewTransition>`), wrapped around every page |
-| `src/components/hero/` | Pinned hero and the WebGL arch scene (poster + SVG fallback) |
+| `src/components/hero/` | Portfolio hero (event poster, headline, gentle scroll drift) |
 | `src/components/work/` | Filter bar, grid tiles, cursor chip, Flip expansion dialog |
 | `src/components/case/` | Case hero, pinned story, before/after slider, gallery, film, next project |
 | `src/components/ui/` | Device frames (LED panel, phone), line-mask text reveal |
@@ -43,7 +43,7 @@ Routes: `/`, `/about`, `/portfolio`, `/portfolio/[slug]`, `/career`, `/blog`, `/
 
 ## Adding a role or a post
 
-- Role: add to `roles` in `src/lib/careers.ts` with its `team` and `applyUrl`. Teams with no roles show a disabled filter.
+- Role: add to `roles` in `src/lib/careers.ts` with its `team` and a `status`. Open roles (`"open"`) need a `summary` and `applyUrl`; closed (`"closed"`) or upcoming (`"soon"`) listings show only their status. Teams with no roles show a disabled filter.
 - Post: add to `posts` in `src/lib/posts.ts`. The body is a list of blocks (`p`, `h2`, `h3`, `list`, `facts`, `link`). Reading time is computed. The newest post becomes the spotlight.
 
 ## Adding a project

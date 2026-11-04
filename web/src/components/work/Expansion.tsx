@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { Flip, gsap } from "@/lib/gsap";
-import type { Project } from "@/lib/projects";
+import type { Project, Still } from "@/lib/projects";
 import { FramedMedia } from "@/components/ui/Frames";
 
 type Props = {
@@ -93,6 +94,9 @@ export function Expansion({
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (closing) return;
+      // While the post row has focus, arrows scroll it instead of stepping projects.
+      const inRow = (e.target as HTMLElement | null)?.closest?.("[data-post-row]");
+      if (inRow && (e.key === "ArrowLeft" || e.key === "ArrowRight")) return;
       if (e.key === "Escape") onRequestClose();
       else if (e.key === "ArrowRight") onNext();
       else if (e.key === "ArrowLeft") onPrev();
@@ -116,6 +120,9 @@ export function Expansion({
   }, [onRequestClose, onNext, onPrev, closing]);
 
   const isPhone = project.frame === "phone";
+  const posts = project.kind === "piece" ? project.posts : undefined;
+  // Social posts are 3:4; show the cover whole rather than cropped to 16:9.
+  const isPost = !!posts?.length;
   const titleId = `x-title-${project.slug}`;
 
   return createPortal(
@@ -138,9 +145,9 @@ export function Expansion({
         className="pointer-events-none fixed inset-0 bg-[radial-gradient(80%_60%_at_70%_0%,color-mix(in_oklab,var(--accent)_16%,transparent),transparent_65%)]"
       />
 
-      <div data-x-backdrop className="relative mx-auto grid min-h-full max-w-[var(--maxw)] content-center gap-8 px-[var(--gutter)] py-20 lg:grid-cols-12 lg:gap-12 lg:py-16">
+      <div data-x-backdrop className="relative mx-auto grid min-h-full max-w-[var(--maxw)] grid-cols-1 content-center gap-8 px-[var(--gutter)] py-20 lg:grid-cols-12 lg:gap-12 lg:py-16">
         <div
-          className={`lg:col-span-8 ${isPhone ? "flex justify-center" : ""}`}
+          className={`lg:col-span-8 ${isPhone || isPost ? "flex justify-center" : ""}`}
         >
           <div
             ref={media}
@@ -148,7 +155,9 @@ export function Expansion({
             className={`relative ${
               isPhone
                 ? "aspect-[9/19.2] h-[min(80dvh,48rem)] rounded-[clamp(1.6rem,3.2vw,2.75rem)]"
-                : "aspect-video w-full overflow-hidden rounded-[clamp(12px,1.3vw,20px)] bg-navy-900"
+                : isPost
+                  ? "aspect-[3/4] w-[min(100%,calc(min(72dvh,44rem)*0.75))] overflow-hidden rounded-[clamp(12px,1.3vw,20px)] bg-navy-900"
+                  : "aspect-video w-full overflow-hidden rounded-[clamp(12px,1.3vw,20px)] bg-navy-900"
             }`}
           >
             <FramedMedia
@@ -158,7 +167,7 @@ export function Expansion({
               loop={project.loop}
               playing={!paused}
               focus={project.focus}
-              sizes="(min-width: 1024px) 66vw, 100vw"
+              sizes={isPost ? "(min-width: 1024px) 33rem, 100vw" : "(min-width: 1024px) 66vw, 100vw"}
               priority
             />
           </div>
@@ -207,6 +216,8 @@ export function Expansion({
             )}
           </div>
         </div>
+
+        {posts && posts.length > 0 && <PostRow posts={posts} title={project.title} />}
       </div>
 
       <div className="pointer-events-none fixed inset-x-0 top-0 z-10">
@@ -270,5 +281,33 @@ function IconButton({
         {children}
       </svg>
     </button>
+  );
+}
+
+/**
+ * The full set of posts as a row that scrolls sideways: swipe on touch,
+ * shift-scroll or arrow keys once focused on desktop. Snaps post by post.
+ */
+function PostRow({ posts, title }: { posts: Still[]; title: string }) {
+  return (
+    <section data-x-copy aria-label={`${title}: all posts`} className="min-w-0 lg:col-span-12">
+      <p className="t-meta text-faint">
+        {posts.length} posts <span aria-hidden>·</span> swipe or scroll
+      </p>
+      <ul
+        tabIndex={0}
+        data-post-row
+        className="mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-3 [scrollbar-color:var(--line-strong)_transparent] [scrollbar-width:thin] md:gap-4"
+      >
+        {posts.map((p, i) => (
+          <li
+            key={p.src}
+            className="relative aspect-[3/4] w-[min(68vw,16rem)] shrink-0 snap-start overflow-hidden rounded-[clamp(10px,1vw,16px)] bg-navy-900 ring-1 ring-line"
+          >
+            <Image src={p.src} alt={p.alt} fill sizes="16rem" className="object-cover" loading={i < 4 ? "eager" : "lazy"} />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

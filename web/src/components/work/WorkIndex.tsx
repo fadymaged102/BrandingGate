@@ -1,8 +1,10 @@
 "use client";
 
-import { useId, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useId, useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Flip, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
-import { DISCIPLINES, projects, type Discipline, type Project } from "@/lib/projects";
+import { DISCIPLINES, isDiscipline, projects, type Discipline, type Project } from "@/lib/projects";
+import { FilterBar } from "@/components/ui/FilterBar";
 import { useFinePointer, useReducedMotion } from "@/hooks/useMedia";
 import { useLenis } from "@/components/SmoothScroll";
 import { clearAccent, setAccent } from "@/lib/atmosphere";
@@ -22,8 +24,6 @@ export function WorkIndex() {
   const section = useRef<HTMLElement>(null);
   const grid = useRef<HTMLDivElement>(null);
   const chip = useRef<HTMLDivElement>(null);
-  const indicator = useRef<HTMLSpanElement>(null);
-  const filterBar = useRef<HTMLDivElement>(null);
   const flipState = useRef<Flip.FlipState | null>(null);
   const chipTo = useRef<{ x: gsap.QuickToFunc; y: gsap.QuickToFunc } | null>(null);
 
@@ -57,6 +57,16 @@ export function WorkIndex() {
     setFilter(next);
   };
 
+  // Keep the address in step with the filter, so a service link that opened
+  // the page on one discipline can open it on another next time.
+  const chooseFilter = (next: FilterId) => {
+    applyFilter(next);
+    const url = new URL(window.location.href);
+    if (next === "all") url.searchParams.delete("filter");
+    else url.searchParams.set("filter", next);
+    window.history.replaceState(null, "", url);
+  };
+
   // Animate tiles from their old layout to the new one.
   useLayoutEffect(() => {
     const state = flipState.current;
@@ -74,30 +84,6 @@ export function WorkIndex() {
       onComplete: () => ScrollTrigger.refresh(),
     });
   }, [filter]);
-
-  // Slide the gold indicator under the active filter. The pill is a fixed
-  // 100px wide and scaled, so the move is transform-only (no layout).
-  useLayoutEffect(() => {
-    const bar = filterBar.current;
-    const ind = indicator.current;
-    if (!bar || !ind) return;
-    const place = (animate: boolean) => {
-      const active = bar.querySelector<HTMLElement>('[aria-pressed="true"]');
-      if (!active) return;
-      const vars = { x: active.offsetLeft, scaleX: active.offsetWidth / 100 };
-      if (animate && !reduced) gsap.to(ind, { ...vars, duration: 0.5, ease: "ui" });
-      else gsap.set(ind, vars);
-      // Keep the active filter in view when the bar scrolls on small screens.
-      if (bar.scrollWidth > bar.clientWidth) {
-        const left = active.offsetLeft - (bar.clientWidth - active.offsetWidth) / 2;
-        bar.scrollTo({ left, behavior: animate && !reduced ? "smooth" : "auto" });
-      }
-    };
-    place(true);
-    const ro = new ResizeObserver(() => place(false));
-    ro.observe(bar);
-    return () => ro.disconnect();
-  }, [filter, reduced]);
 
   /* ---------------- Cursor chip ---------------- */
 
@@ -285,36 +271,13 @@ export function WorkIndex() {
 
       <div className="filter-sticky sticky z-30 mb-8 md:mb-10">
         <div className="shell">
-          <div className="flex">
-            <div
-              ref={filterBar}
-              role="group"
-              aria-label="Filter projects by discipline"
-              className="relative flex max-w-full gap-1 overflow-x-auto rounded-full bg-[rgb(11_21_76/0.55)] p-1 ring-1 ring-line backdrop-blur-xl [scrollbar-width:none] max-sm:[mask-image:linear-gradient(to_right,#000_85%,transparent)]"
-            >
-              <span
-                ref={indicator}
-                aria-hidden
-                className="absolute bottom-1 left-0 top-1 w-[100px] origin-left rounded-full bg-fg/[0.08] ring-1 ring-gold/70"
-              />
-              {DISCIPLINES.map((d) => {
-                const count = counts.get(d.id) ?? 0;
-                return (
-                  <button
-                    key={d.id}
-                    type="button"
-                    aria-pressed={filter === d.id}
-                    disabled={count === 0}
-                    onClick={() => applyFilter(d.id)}
-                    className="relative z-10 min-h-11 shrink-0 rounded-full px-4 py-2.5 text-[0.9375rem] text-muted transition-colors duration-150 hover:text-fg disabled:opacity-40 aria-pressed:text-fg"
-                  >
-                    {d.label}
-                    <span className="t-meta ml-1.5 text-[0.6875rem] text-faint">{count}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <FilterBar
+            options={DISCIPLINES}
+            value={filter}
+            onChange={chooseFilter}
+            counts={counts}
+            label="Filter projects by discipline"
+          />
         </div>
       </div>
 
@@ -341,7 +304,7 @@ export function WorkIndex() {
         {visible.length === 0 && (
           <p className="py-24 text-center text-muted">
             Nothing in {activeLabel} yet.{" "}
-            <button type="button" className="text-fg underline underline-offset-4" onClick={() => applyFilter("all")}>
+            <button type="button" className="text-fg underline underline-offset-4" onClick={() => chooseFilter("all")}>
               Show all work
             </button>
           </p>
@@ -358,6 +321,11 @@ export function WorkIndex() {
         <span className="text-ink/50">{hovered?.kind === "case" ? "Open" : "View"}</span>
       </div>
 
+      {/* Service links arrive as /portfolio?filter=<discipline>. */}
+      <Suspense fallback={null}>
+        <FilterFromQuery onFilter={applyFilter} />
+      </Suspense>
+
       {openProjectData && (
         <Expansion
           project={openProjectData}
@@ -373,4 +341,14 @@ export function WorkIndex() {
       )}
     </section>
   );
+}
+
+/** Applies a ?filter= discipline from the address; renders nothing. */
+function FilterFromQuery({ onFilter }: { onFilter: (id: FilterId) => void }) {
+  const requested = useSearchParams().get("filter");
+  const apply = useEffectEvent(onFilter);
+  useEffect(() => {
+    if (requested && isDiscipline(requested)) apply(requested);
+  }, [requested]);
+  return null;
 }

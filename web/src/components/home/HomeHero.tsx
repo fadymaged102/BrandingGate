@@ -106,15 +106,17 @@ export function HomeHero() {
           <Eyebrow>
             {home.eyebrow}. {studio.city}, since {studio.founded}.
           </Eyebrow>
-          <RevealText as="h1" id={titleId} trigger="mount" delay={0.15} className="t-d1 mt-6 max-w-[9ch]">
+          <RevealText as="h1" id={titleId} trigger="mount" delay={0.15} className="t-d1 mt-6 max-w-[12ch]">
             {home.headline}
           </RevealText>
-          <p data-hero-intro className="t-body-l mt-6 max-w-[38ch] text-muted">
-            {home.intro}
-          </p>
+          <div data-hero-intro className="t-body-l mt-6 max-w-[44ch] space-y-4 text-pretty text-muted">
+            {home.intro.map((p) => (
+              <p key={p}>{p}</p>
+            ))}
+          </div>
           <div className="mt-10 flex flex-wrap items-center justify-between gap-6">
             <div data-hero-actions className="flex flex-wrap items-center gap-3">
-              <PillLink href="/portfolio">See the work</PillLink>
+              <PillLink href="/portfolio">See the projects</PillLink>
               <PillLink href="/about" variant="ghost">
                 About the studio
               </PillLink>

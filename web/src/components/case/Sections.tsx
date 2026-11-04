@@ -120,13 +120,53 @@ export function Gallery({ stills, portrait }: { stills: Still[]; portrait: boole
 
 export function Film({ youtubeId, title, poster }: { youtubeId: string; title: string; poster: Still }) {
   const [playing, setPlaying] = useState(false);
+  // "ready" once the video is actually showing frames (or can be played).
+  const [loaded, setLoaded] = useState(false);
+  const [slow, setSlow] = useState(false);
   const titleId = useId();
   const frame = useRef<HTMLIFrameElement>(null);
+  const watchUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
 
   // The play button unmounts on click; hand focus to the player.
   useEffect(() => {
     if (playing) frame.current?.focus();
   }, [playing]);
+
+  // The poster holds until the film is playing, so the frame never shows an
+  // empty black box while YouTube buffers. The player reports its state over
+  // postMessage once told we are listening (enablejsapi). If it is blocked
+  // or slow, offer YouTube itself.
+  useEffect(() => {
+    if (!playing || loaded) return;
+    const onMessage = (e: MessageEvent) => {
+      if (e.source !== frame.current?.contentWindow || typeof e.data !== "string") return;
+      try {
+        const msg = JSON.parse(e.data) as { event?: string; info?: unknown };
+        const state =
+          msg.event === "onStateChange"
+            ? msg.info
+            : msg.event === "infoDelivery" && msg.info && typeof msg.info === "object"
+              ? (msg.info as { playerState?: number }).playerState
+              : undefined;
+        // 1 = playing, 2 = paused, 5 = cued (autoplay refused: the player shows its own play button).
+        if (state === 1 || state === 2 || state === 5) setLoaded(true);
+      } catch {
+        // Not a player message.
+      }
+    };
+    window.addEventListener("message", onMessage);
+    const t = window.setTimeout(() => setSlow(true), 8000);
+    return () => {
+      window.removeEventListener("message", onMessage);
+      window.clearTimeout(t);
+    };
+  }, [playing, loaded]);
+
+  const onFrameLoad = () => {
+    frame.current?.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: titleId }), "https://www.youtube-nocookie.com");
+    // Whatever the player reports, never hold the poster for long once it has loaded.
+    window.setTimeout(() => setLoaded(true), 5000);
+  };
   return (
     <section aria-labelledby={titleId} className="shell py-24 md:py-36">
       <div className="mb-8 flex items-end justify-between gap-6">
@@ -134,7 +174,7 @@ export function Film({ youtubeId, title, poster }: { youtubeId: string; title: s
           The film
         </h2>
         <a
-          href={`https://www.youtube.com/watch?v=${youtubeId}`}
+          href={watchUrl}
           target="_blank"
           rel="noreferrer"
           className="t-meta text-muted transition-colors hover:text-fg"
@@ -145,14 +185,41 @@ export function Film({ youtubeId, title, poster }: { youtubeId: string; title: s
       </div>
       <div className="relative aspect-video overflow-hidden rounded-[clamp(14px,1.6vw,24px)] bg-navy-900">
         {playing ? (
-          <iframe
-            ref={frame}
-            src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
-            title={title}
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-            allowFullScreen
-            className="absolute inset-0 h-full w-full"
-          />
+          <>
+            {!loaded && (
+              <div className="absolute inset-0 z-10" role="status">
+                <Image src={poster.src} alt="" fill sizes="(min-width: 1472px) 1400px, 100vw" className="object-cover" />
+                <span aria-hidden className="absolute inset-0 bg-[rgb(5_10_36/0.55)]" />
+                <span className="absolute inset-0 grid place-items-center p-6 text-center">
+                  {slow ? (
+                    <span className="text-fg">
+                      The player is taking a while.{" "}
+                      <a href={watchUrl} target="_blank" rel="noreferrer" className="underline underline-offset-4">
+                        Watch on YouTube
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-3 text-fg">
+                      <span
+                        aria-hidden
+                        className="size-5 animate-spin rounded-full border-2 border-fg/30 border-t-fg motion-reduce:animate-none"
+                      />
+                      Loading the film
+                    </span>
+                  )}
+                </span>
+              </div>
+            )}
+            <iframe
+              ref={frame}
+              src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
+              title={title}
+              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+              onLoad={onFrameLoad}
+              className={`absolute inset-0 h-full w-full transition-opacity duration-500 ease-ui ${loaded ? "opacity-100" : "opacity-0"}`}
+            />
+          </>
         ) : (
           <button
             type="button"

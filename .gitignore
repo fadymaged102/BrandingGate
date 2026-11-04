@@ -6,3 +6,7 @@
 .playwright-cli/
 
 .DS_Store
+
+# Client feedback and review notes (not shipped)
+BRANDING GATE WEBSITE EDITS.pdf
+client-edits-review.txt

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { ArrowUpRight, Box, Clapperboard, Code, Gift, Megaphone, PartyPopper, type LucideIcon } from "lucide-react";
 import { useId, useRef, type CSSProperties } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { home, services } from "@/lib/site";
+import { services, servicesCopy } from "@/lib/site";
+import { portfolioHref } from "@/lib/projects";
 
 /** Per-note dressing: paper colour, resting tilt, and tape or a pin. Fixed, so the board renders the same every time. */
 const NOTES: Record<string, { icon: LucideIcon; paper: string; tilt: number; fix: "tape" | "pin" }> = {
@@ -19,7 +20,7 @@ const NOTES: Record<string, { icon: LucideIcon; paper: string; tilt: number; fix
 /**
  * The six services as sticky notes pinned to a dark board. They drop in
  * one after another; on hover or focus a note straightens, lifts and
- * casts a longer shadow. Each opens the portfolio.
+ * casts a longer shadow. Each opens the portfolio filtered to its discipline.
  */
 export function Services() {
   const titleId = useId();
@@ -56,7 +57,7 @@ export function Services() {
         <h2 id={titleId} className="t-d2 md:col-span-7">
           Services
         </h2>
-        <p className="max-w-[44ch] text-muted md:col-span-5 md:justify-self-end">{home.servicesIntro}</p>
+        <p className="max-w-[44ch] text-muted md:col-span-5 md:justify-self-end">{servicesCopy.body}</p>
       </div>
 
       <div
@@ -76,8 +77,8 @@ export function Services() {
                 className={`${i % 2 === 1 ? "mt-6 md:mt-0 xl:mt-8" : ""} ${i % 3 === 1 ? "md:mt-8 xl:mt-8" : ""}`}
               >
                 <Link
-                  href="/portfolio#work"
-                  aria-label={`${s.title}: see the work`}
+                  href={portfolioHref(s.id)}
+                  aria-label={`${s.title}: see the projects`}
                   className="note note-paper relative flex aspect-square flex-col justify-between rounded-[3px] p-[clamp(0.9rem,1.4vw,1.25rem)] text-ink"
                   style={{ "--tilt": `${n.tilt}deg`, backgroundColor: n.paper } as CSSProperties}
                 >
@@ -105,7 +106,7 @@ export function Services() {
                       {s.title}
                     </span>
                     <span className="mt-2 flex items-center gap-1 text-[0.8125rem] font-medium text-ink/75">
-                      See the work
+                      See the projects
                       <ArrowUpRight aria-hidden className="size-4" strokeWidth={1.8} />
                     </span>
                   </span>

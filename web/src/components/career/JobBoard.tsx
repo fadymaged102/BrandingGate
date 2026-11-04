@@ -4,7 +4,7 @@ import { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Flip, gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { useFlipFilter } from "@/hooks/useFlipFilter";
 import { useReducedMotion } from "@/hooks/useMedia";
-import { roles, TEAMS, type Role, type Team } from "@/lib/careers";
+import { roles, STATUS_LABEL, TEAMS, type ListedRole, type OpenRole, type Team } from "@/lib/careers";
 import { FilterBar } from "@/components/ui/FilterBar";
 import { PillLink } from "@/components/ui/Buttons";
 
@@ -12,8 +12,9 @@ type FilterId = Team | "all";
 
 /**
  * Open roles. Filtering and opening a role both Flip the list, so cards
- * glide to their new places on transforms rather than snapping. Each role
- * applies through the Google Form it was published with.
+ * glide to their new places on transforms rather than snapping. Each open
+ * role applies through the Google Form it was published with; closed and
+ * upcoming internships are listed with their status and nothing to open.
  */
 export function JobBoard() {
   const titleId = useId();
@@ -75,9 +76,12 @@ export function JobBoard() {
   return (
     <section ref={root} id="roles" aria-labelledby={titleId} className="relative scroll-mt-24 pb-24 md:pb-36">
       <div className="shell grid gap-6 pb-10 md:grid-cols-12 md:items-end md:pb-14">
-        <h2 id={titleId} className="t-d2 md:col-span-7">
-          Open roles
-        </h2>
+        <div className="md:col-span-7">
+          <p className="t-meta text-muted">Open roles</p>
+          <h2 id={titleId} className="t-d2 mt-5">
+            Join us now.
+          </h2>
+        </div>
         <p className="t-meta text-faint md:col-span-5 md:justify-self-end" aria-live="polite">
           {visible.length} {visible.length === 1 ? "role" : "roles"}
           {filter !== "all" && ` in ${activeLabel}`}
@@ -100,21 +104,25 @@ export function JobBoard() {
       </div>
 
       <ol ref={list} className="shell grid gap-3">
-        {roles.map((r) => (
-          <RoleCard
-            key={r.slug}
-            role={r}
-            hidden={!visible.includes(r)}
-            open={open === r.slug}
-            onToggle={() => toggle(r.slug)}
-          />
-        ))}
+        {roles.map((r) =>
+          r.status === "open" ? (
+            <RoleCard
+              key={r.slug}
+              role={r}
+              hidden={!visible.includes(r)}
+              open={open === r.slug}
+              onToggle={() => toggle(r.slug)}
+            />
+          ) : (
+            <ListedRoleRow key={r.slug} role={r} hidden={!visible.includes(r)} />
+          ),
+        )}
       </ol>
     </section>
   );
 }
 
-function RoleCard({ role, hidden, open, onToggle }: { role: Role; hidden: boolean; open: boolean; onToggle: () => void }) {
+function RoleCard({ role, hidden, open, onToggle }: { role: OpenRole; hidden: boolean; open: boolean; onToggle: () => void }) {
   const panelId = useId();
   const headId = useId();
   const team = TEAMS.find((t) => t.id === role.team)?.label;
@@ -172,6 +180,33 @@ function RoleCard({ role, hidden, open, onToggle }: { role: Role; hidden: boolea
           </PillLink>
           <p className="text-[0.875rem] text-faint">Opens the application form on Google Forms.</p>
         </div>
+      </div>
+    </li>
+  );
+}
+
+/** A closed or upcoming listing: same row, a status instead of an application. */
+function ListedRoleRow({ role, hidden }: { role: ListedRole; hidden: boolean }) {
+  const team = TEAMS.find((t) => t.id === role.team)?.label;
+  return (
+    <li
+      data-flip-item
+      aria-hidden={hidden || undefined}
+      inert={hidden}
+      className={`rounded-[clamp(12px,1.3vw,20px)] bg-[rgb(11_21_76/0.22)] ring-1 ring-line ${hidden ? "hidden" : ""}`}
+    >
+      <div className="flex items-center gap-4 p-5 md:gap-8 md:p-8">
+        <span className="t-meta hidden w-36 shrink-0 text-faint md:block">{team}</span>
+        <span className="min-w-0 flex-1">
+          <h3 className="t-h3 text-muted">{role.title}</h3>
+          <span className="mt-1.5 block text-[0.9375rem] text-muted">
+            <span className="md:hidden">{team} · </span>
+            {role.location}
+          </span>
+        </span>
+        <span className="t-meta shrink-0 rounded-full px-3 py-1.5 text-muted ring-1 ring-line-strong">
+          {STATUS_LABEL[role.status]}
+        </span>
       </div>
     </li>
   );
