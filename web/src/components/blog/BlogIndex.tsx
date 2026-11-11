@@ -14,7 +14,7 @@ type FilterId = Category | "all";
 
 const categoryLabel = (c: Category) => CATEGORIES.find((x) => x.id === c)?.label ?? c;
 
-/** The latest post on a pane of glass over the gold arch, then every post, filterable. */
+/** The latest post on a pane of glass, then every post, filterable. */
 export function BlogIndex({ posts }: { posts: Post[] }) {
   const listId = useId();
   const root = useRef<HTMLDivElement>(null);
@@ -36,7 +36,6 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         gsap.from("[data-spotlight]", { y: 60, opacity: 0, duration: 1.2, ease: "reveal", delay: 0.3 });
-        gsap.fromTo("[data-spot-arch]", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.8, ease: "reveal", delay: 0.4 });
         gsap.from("[data-flip-item]", {
           y: 50,
           opacity: 0,
@@ -46,9 +45,6 @@ export function BlogIndex({ posts }: { posts: Post[] }) {
           clearProps: "transform,opacity",
           scrollTrigger: { trigger: list.current, start: "top 88%", once: true },
         });
-      });
-      mm.add("(prefers-reduced-motion: reduce)", () => {
-        gsap.set("[data-spot-arch]", { strokeDashoffset: 0 });
       });
       return () => mm.revert();
     },
@@ -108,23 +104,6 @@ function Spotlight({ post, depth }: { post: Post; depth: boolean }) {
   return (
     <section aria-labelledby={titleId} className="shell pb-24 md:pb-36">
       <div className="relative [perspective:1600px]">
-        {/* The arch stands behind the glass, so the pane reads as a layer in front of it. */}
-        <svg
-          viewBox="0 0 200 200"
-          aria-hidden
-          fill="none"
-          className="pointer-events-none absolute -top-[18%] right-[4%] w-[min(70vw,40rem)] max-md:hidden"
-        >
-          <path
-            data-spot-arch
-            pathLength={1}
-            d="M 163.5 144.4 A 77.5 77.5 0 1 0 36.5 144.4"
-            stroke="#c8902a"
-            strokeWidth="1"
-            strokeLinecap="round"
-            className="[stroke-dasharray:1]"
-          />
-        </svg>
         <div
           aria-hidden
           className="pointer-events-none absolute -top-[10%] right-[10%] size-[min(50vw,28rem)] rounded-full bg-[radial-gradient(closest-side,rgb(58_91_217/0.35),transparent)] blur-2xl"

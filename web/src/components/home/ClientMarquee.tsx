@@ -1,16 +1,54 @@
 "use client";
 
+import Image from "next/image";
 import { useId, useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
-import { clientWall } from "@/lib/site";
+import { clientLogos, clientWall } from "@/lib/site";
 import { useReducedMotion } from "@/hooks/useMedia";
 
 const half = Math.ceil(clientWall.length / 2);
 const rows = [clientWall.slice(0, half), clientWall.slice(half)];
 
+type Client = (typeof clientWall)[number];
+
+/**
+ * A client's logo, sized by shape rather than one fixed height: wide wordmarks
+ * sit lower, compact marks taller, so each carries about the same visual weight.
+ * Sizes are in em, so they follow the surrounding font size; `scale` enlarges
+ * them in the small-type list. `tone` dims the off-white logo.
+ */
+function ClientMark({
+  name,
+  tone,
+  scale = 1,
+  labelled = false,
+}: {
+  name: Client;
+  tone: number;
+  scale?: number;
+  labelled?: boolean;
+}) {
+  const logo = clientLogos[name];
+  const em = Math.min(1.35, 1.05 * (2.45 / (logo.width / logo.height)) ** 0.4) * scale;
+  return (
+    <Image
+      src={logo.src}
+      width={logo.width}
+      height={logo.height}
+      alt={labelled ? name : ""}
+      // The bands move, so a logo loading late would pop in mid-scroll. All 57 weigh
+      // ~525 KB: fetch them up front, but behind the hero and anything above the fold.
+      loading="eager"
+      fetchPriority="low"
+      className="inline-block align-middle"
+      style={{ height: `${em}em`, width: "auto", opacity: tone }}
+    />
+  );
+}
+
 /**
  * The client wall as two counter-running bands laid on a tilted plane, so
- * names recede into the room. Scrolling speeds them up in the direction of
+ * logos recede into the room. Scrolling speeds them up in the direction of
  * travel. Pausable (WCAG 2.2.2) and still under reduced motion.
  */
 export function ClientMarquee() {
@@ -106,7 +144,7 @@ export function ClientMarquee() {
                 )}
               </svg>
               {paused ? "Play" : "Pause"}
-              <span className="sr-only"> client names</span>
+              <span className="sr-only"> client logos</span>
             </button>
           </div>
         )}
@@ -115,8 +153,9 @@ export function ClientMarquee() {
       {reduced ? (
         <ul className="shell mt-14 flex flex-wrap gap-x-8 gap-y-3">
           {clientWall.map((c) => (
-            <li key={c} className="font-display text-[clamp(1.125rem,1.8vw,1.5rem)] font-light text-muted">
-              {c}
+            <li key={c} className="flex items-center text-[clamp(1.125rem,1.8vw,1.5rem)]">
+              {/* 0.68 ≈ the muted text colour on navy. */}
+              <ClientMark name={c} tone={0.68} scale={1.4} labelled />
             </li>
           ))}
         </ul>
@@ -139,11 +178,10 @@ export function ClientMarquee() {
                       {row.map((c) => (
                         <span
                           key={c}
-                          className={`whitespace-nowrap px-[clamp(1rem,2.4vw,2.25rem)] font-display text-[clamp(2rem,5vw,4.5rem)] leading-[1.15] tracking-[-0.03em] ${
-                            i % 2 ? "font-light text-faint" : "font-medium text-fg/85"
-                          }`}
+                          className="whitespace-nowrap px-[clamp(1rem,2.4vw,2.25rem)] text-[clamp(2rem,5vw,4.5rem)] leading-[1.15]"
                         >
-                          {c}
+                          {/* The far band is dimmer, as if further back: fg/85 and ≈ the faint text colour. */}
+                          <ClientMark name={c} tone={i % 2 ? 0.55 : 0.85} />
                           <span className="ml-[clamp(1rem,2.4vw,2.25rem)] inline-block size-[0.18em] -translate-y-[0.2em] rounded-full bg-line-strong align-middle" />
                         </span>
                       ))}

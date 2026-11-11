@@ -9,7 +9,7 @@ export const services: Service[] = [
   { id: "events", title: "Event Management" },
   { id: "media", title: "Media Production" },
   { id: "digital", title: "Digital Marketing" },
-  { id: "3d", title: "3D Designs" },
+  { id: "3d", title: "Exhibition Stands" },
   { id: "giveaways", title: "Giveaways" },
   { id: "web", title: "Web Development" },
 ];
@@ -136,3 +136,72 @@ export const clientWall = [
   "Teckman",
   "El Moughrabi",
 ] as const;
+
+
+/**
+ * Client logos, recoloured to one off-white so they sit on navy. Ten come from
+ * the files the client supplied (Drive, November 2026 edits) and 43 are cut
+ * from the logo wall on the live brandinggate.com. Their wall versions are solid
+ * boxes, so Emirates NBD is the bank's own SVG (emiratesnbd.com), DENSO and OPPO
+ * are the Wikimedia Commons SVGs, and Fawry is a one-colour version of the
+ * supplied logo without its yellow box.
+ */
+export const clientLogos: Record<(typeof clientWall)[number], { src: string; width: number; height: number }> = {
+  "EVA Pharma": { src: "/clients/eva-pharma.webp", width: 306, height: 171 },
+  "Redcon Steel": { src: "/clients/redcon-steel.webp", width: 223, height: 194 },
+  Nawy: { src: "/clients/nawy.webp", width: 161, height: 194 },
+  "Palm Hills Developments": { src: "/clients/palm-hills.webp", width: 628, height: 106 },
+  Fawry: { src: "/clients/fawry.webp", width: 458, height: 131 },
+  "Hero Baby": { src: "/clients/hero-baby.webp", width: 257, height: 141 },
+  SODIC: { src: "/clients/sodic.webp", width: 507, height: 123 },
+  "Fire Castle": { src: "/clients/fire-castle.webp", width: 286, height: 133 },
+  "MBG Development": { src: "/clients/mbg-development.webp", width: 236, height: 105 },
+  "Limitless Naturals": { src: "/clients/limitless-naturals.webp", width: 448, height: 133 },
+  "Emirates NBD": { src: "/clients/emirates-nbd.webp", width: 473, height: 129 },
+  BCG: { src: "/clients/bcg.webp", width: 370, height: 151 },
+  "Mas Tech Industries": { src: "/clients/mas-tech.webp", width: 194, height: 155 },
+  "Olea Valley": { src: "/clients/olea-valley.webp", width: 200, height: 140 },
+  "Apex Pharma": { src: "/clients/apex-pharma.webp", width: 312, height: 90 },
+  "EG Properties": { src: "/clients/eg-properties.webp", width: 224, height: 130 },
+  IDG: { src: "/clients/idg.webp", width: 229, height: 114 },
+  DevartLab: { src: "/clients/devartlab.webp", width: 245, height: 143 },
+  "Hefny Pharma Group": { src: "/clients/hefny-pharma.webp", width: 133, height: 144 },
+  "Al Wefaq Developments": { src: "/clients/al-wefaq.webp", width: 122, height: 189 },
+  "Teriak Group": { src: "/clients/teriak.webp", width: 252, height: 181 },
+  "SAK Developments": { src: "/clients/sak.webp", width: 331, height: 95 },
+  Catalyst: { src: "/clients/catalyst.webp", width: 388, height: 78 },
+  Adwia: { src: "/clients/adwia.webp", width: 302, height: 125 },
+  "National Bank of Egypt": { src: "/clients/nbe.webp", width: 333, height: 82 },
+  Chemipharm: { src: "/clients/chemipharm.webp", width: 309, height: 81 },
+  EIPICO: { src: "/clients/eipico.webp", width: 157, height: 137 },
+  Marcyrl: { src: "/clients/marcyrl.webp", width: 163, height: 154 },
+  HSO: { src: "/clients/hso.webp", width: 194, height: 102 },
+  Rameda: { src: "/clients/rameda.webp", width: 136, height: 150 },
+  "Tabuk Pharmaceuticals": { src: "/clients/tabuk.webp", width: 354, height: 93 },
+  OPPO: { src: "/clients/oppo.webp", width: 514, height: 122 },
+  Solyphar: { src: "/clients/solyphar.webp", width: 262, height: 152 },
+  "Dynamic Sound Studio": { src: "/clients/dynamic-sound.webp", width: 132, height: 184 },
+  Cinfa: { src: "/clients/cinfa.webp", width: 255, height: 89 },
+  "Pukka New Capital": { src: "/clients/pukka.webp", width: 219, height: 172 },
+  "MT Ikar": { src: "/clients/mt-ikar.webp", width: 197, height: 169 },
+  "Parkville Pharmaceuticals": { src: "/clients/parkville.webp", width: 282, height: 68 },
+  "First Start": { src: "/clients/first-start.webp", width: 169, height: 125 },
+  DENSO: { src: "/clients/denso.webp", width: 583, height: 112 },
+  "Alesraa Pharmaceuticals": { src: "/clients/alesraa.webp", width: 157, height: 163 },
+  "Mash Premiere": { src: "/clients/mash-premiere.webp", width: 313, height: 71 },
+  Minapharm: { src: "/clients/minapharm.webp", width: 617, height: 107 },
+  "Globe Pharmaceuticals": { src: "/clients/globe.webp", width: 313, height: 101 },
+  Utopia: { src: "/clients/utopia.webp", width: 443, height: 135 },
+  EGEMAC: { src: "/clients/egemac.webp", width: 334, height: 86 },
+  "Emirates Logistics": { src: "/clients/emirates-logistics.webp", width: 494, height: 76 },
+  vcloud: { src: "/clients/vcloud.webp", width: 350, height: 71 },
+  "Orion Digital Solutions": { src: "/clients/orion.webp", width: 315, height: 99 },
+  "DC Industries": { src: "/clients/dc-industries.webp", width: 526, height: 90 },
+  AMS: { src: "/clients/ams.webp", width: 247, height: 142 },
+  Bosta: { src: "/clients/bosta.webp", width: 413, height: 141 },
+  Concrete: { src: "/clients/concrete.webp", width: 273, height: 57 },
+  Valeurs: { src: "/clients/valeurs.webp", width: 319, height: 83 },
+  Amanleek: { src: "/clients/amanleek.webp", width: 405, height: 86 },
+  Teckman: { src: "/clients/teckman.webp", width: 537, height: 62 },
+  "El Moughrabi": { src: "/clients/el-moughrabi.webp", width: 448, height: 133 },
+};

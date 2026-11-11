@@ -260,7 +260,7 @@ export function WorkIndex() {
         </h2>
         <div className="md:col-span-5 md:justify-self-end">
           <p className="max-w-[44ch] text-muted">
-            Graduations, kickoffs and brand nights, plus the media, digital, 3D and giveaway work around them.
+            Graduations, kickoffs and brand nights, plus the media, digital, exhibition stand and giveaway work around them.
           </p>
           <p className="t-meta mt-4 text-faint" aria-live="polite">
             {visible.length} {visible.length === 1 ? "project" : "projects"}

@@ -7,7 +7,7 @@ import { PageTransition } from "@/components/PageTransition";
 export const metadata: Metadata = {
   title: "Portfolio",
   description:
-    "Graduations, corporate kickoffs and brand nights by Branding Gate, with the media, digital, 3D and giveaway work around them.",
+    "Graduations, corporate kickoffs and brand nights by Branding Gate, with the media, digital, exhibition stand and giveaway work around them.",
   alternates: { canonical: "/portfolio" },
 };
 

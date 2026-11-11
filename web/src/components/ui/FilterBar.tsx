@@ -32,6 +32,8 @@ export function FilterBar<T extends string>({ options, value, onChange, counts, 
       const active = el.querySelector<HTMLElement>('[aria-pressed="true"]');
       if (!active) return;
       const vars = { x: active.offsetLeft, y: active.offsetTop, scaleX: active.offsetWidth / 100 };
+      // A slide still running from an earlier render would otherwise finish on the old option.
+      gsap.killTweensOf(ind);
       if (animate && !reduced) gsap.to(ind, { ...vars, duration: 0.5, ease: "ui" });
       else gsap.set(ind, vars);
     };

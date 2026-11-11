@@ -5,7 +5,7 @@ export const DISCIPLINES: { id: Discipline | "all"; label: string }[] = [
   { id: "events", label: "Events" },
   { id: "media", label: "Media" },
   { id: "digital", label: "Digital" },
-  { id: "3d", label: "3D" },
+  { id: "3d", label: "Exhibition Stands" },
   { id: "giveaways", label: "Giveaways" },
 ];
 
